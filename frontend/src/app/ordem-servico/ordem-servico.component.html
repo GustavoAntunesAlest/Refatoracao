@@ -1,0 +1,134 @@
+<!-- ❌ PROBLEMA: HTML desorganizado, sem componentização -->
+<div class="ordem-servico-container">
+  <div class="header">
+    <h2>Gerenciamento de Ordens de Serviço</h2>
+    <button class="btn-primary" (click)="abrirFormulario()">+ Nova Ordem de Serviço</button>
+  </div>
+
+  <!-- ❌ PROBLEMA: Formulário modal implementado de forma rudimentar -->
+  <div class="modal" *ngIf="mostrarFormulario">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ editando ? 'Editar' : 'Nova' }} Ordem de Serviço</h3>
+        <button class="btn-close" (click)="fecharFormulario()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <form (ngSubmit)="salvar()">
+          <div class="form-group">
+            <label>Título *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="novaOrdem.titulo" 
+              name="titulo"
+              class="form-control"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label>Descrição</label>
+            <div class="ia-field-container">
+              <textarea 
+                [(ngModel)]="novaOrdem.descricao" 
+                name="descricao"
+                class="form-control"
+                rows="4"></textarea>
+              <!-- ✨ NOVA FEATURE: Botão IA para gerar descrição -->
+              <app-ia-sugestoes
+                tipo="descricao"
+                [inputValue]="novaOrdem.titulo"
+                (sugestaoGerada)="novaOrdem.descricao = $event">
+              </app-ia-sugestoes>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Técnico Responsável *</label>
+            <div class="ia-field-container">
+              <input 
+                type="text" 
+                [(ngModel)]="novaOrdem.tecnico" 
+                name="tecnico"
+                class="form-control"
+                required>
+              <!-- ✨ NOVA FEATURE: Botão IA para sugerir técnico -->
+              <app-ia-sugestoes
+                tipo="tecnico"
+                [inputValue]="novaOrdem.descricao || ''"
+                (sugestaoGerada)="novaOrdem.tecnico = $event">
+              </app-ia-sugestoes>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="fecharFormulario()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              {{ editando ? 'Atualizar' : 'Salvar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ❌ PROBLEMA: Tabela não responsiva, sem paginação -->
+  <div class="tabela-container">
+    <table class="tabela-ordens">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Técnico</th>
+          <th>Status</th>
+          <th>Data Criação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ❌ PROBLEMA: Sem loading state, sem empty state -->
+        <tr *ngFor="let ordem of ordens">
+          <td>{{ ordem.id }}</td>
+          <td>{{ ordem.titulo }}</td>
+          <td>{{ ordem.tecnico }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(ordem.status)">
+              {{ ordem.status }}
+            </span>
+          </td>
+          <td>{{ formatarData(ordem.dataCriacao) }}</td>
+          <td>
+            <div class="acoes">
+              <!-- ❌ PROBLEMA: Botões sem ícones, apenas texto -->
+              <button class="btn-small btn-info" (click)="editarOrdem(ordem)">
+                Editar
+              </button>
+              
+              <!-- ❌ PROBLEMA: Dropdown de status implementado de forma simples/datada -->
+              <select 
+                (change)="alterarStatus(ordem, $any($event.target).value)" 
+                [value]="ordem.status"
+                class="status-select">
+                <option value="Pendente">Pendente</option>
+                <option value="Em Andamento">Em Andamento</option>
+                <option value="Concluída">Concluída</option>
+              </select>
+              
+              <button class="btn-small btn-danger" (click)="excluir(ordem.id)">
+                Excluir
+              </button>
+            </div>
+          </td>
+        </tr>
+        
+        <!-- ❌ PROBLEMA: Mensagem de lista vazia mal implementada -->
+        <tr *ngIf="ordens.length === 0">
+          <td colspan="6" style="text-align: center; padding: 40px;">
+            Nenhuma ordem de serviço encontrada.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

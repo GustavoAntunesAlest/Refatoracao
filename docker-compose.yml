@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: legacyprocs-database
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:-YourStrong@Password123}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - legacyprocs-network
+    restart: unless-stopped
+    healthcheck:
+      test: /bin/bash -c "cat < /dev/null > /dev/tcp/127.0.0.1/1433 && echo 'SQL Server is up' || exit 1"
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 40s
+
+  # Backend API (.NET 8)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: legacyprocs-backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=database;Database=LegacyProcs;User Id=sa;Password=${SA_PASSWORD:-YourStrong@Password123};TrustServerCertificate=True;MultipleActiveResultSets=true
+    ports:
+      - "5001:5000"
+    depends_on:
+      - database
+    networks:
+      - legacyprocs-network
+    restart: unless-stopped
+
+  # Frontend (Angular 18)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: legacyprocs-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - legacyprocs-network
+    restart: unless-stopped
+
+networks:
+  legacyprocs-network:
+    driver: bridge
+
+volumes:
+  sqldata:
+    driver: local

@@ -1,0 +1,38 @@
+<div class="app-container">
+  <header class="app-header">
+    <h1>{{ title }}</h1>
+    
+    <!-- ❌ PROBLEMA: Menu sem routing, apenas troca componentes via flag -->
+    <nav class="app-nav">
+      <button 
+        class="nav-button" 
+        [class.active]="telaAtiva === 'os'"
+        (click)="mudarTela('os')">
+        Ordens de Serviço
+      </button>
+      <button 
+        class="nav-button" 
+        [class.active]="telaAtiva === 'tecnicos'"
+        (click)="mudarTela('tecnicos')">
+        Técnicos
+      </button>
+      <button 
+        class="nav-button" 
+        [class.active]="telaAtiva === 'clientes'"
+        (click)="mudarTela('clientes')">
+        Clientes
+      </button>
+    </nav>
+  </header>
+  
+  <main class="app-main">
+    <!-- ❌ PROBLEMA: Navegação sem router -->
+    <app-ordem-servico *ngIf="telaAtiva === 'os'"></app-ordem-servico>
+    <app-tecnico *ngIf="telaAtiva === 'tecnicos'"></app-tecnico>
+    <app-cliente *ngIf="telaAtiva === 'clientes'"></app-cliente>
+  </main>
+  
+  <footer class="app-footer">
+    <p>&copy; 2025 Alest - Projeto de Treinamento</p>
+  </footer>
+</div>

@@ -1,0 +1,46 @@
+# Confidencial - NÃO commitar gabaritos
+docsTechLead/
+
+# Backend .NET
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+packages/
+.vs/
+
+# Frontend Angular
+node_modules/
+dist/
+.angular/
+*.log
+
+# Database
+*.mdf
+*.ldf
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ✅ ADICIONADO: Arquivos de configuração sensíveis
+# Não versionar arquivos com credenciais reais
+**/appsettings.Production.json
+**/appsettings.*.json
+!**/appsettings.Development.json
+!**/appsettings.json
+!**/appsettings.*.example.json
+.env
+.env.local
+.env.production
+
+# Environment variables (secrets)
+.env
+.env.local
+.env.*.local

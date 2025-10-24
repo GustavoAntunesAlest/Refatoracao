@@ -1,0 +1,9 @@
+<button 
+  type="button" 
+  class="btn-ia"
+  (click)="gerarSugestao()"
+  [disabled]="gerando || disabled || !inputValue"
+  [title]="textoBotao">
+  <mat-icon>{{ icone }}</mat-icon>
+  <span class="btn-text">{{ textoBotao }}</span>
+</button>
